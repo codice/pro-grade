@@ -39,6 +39,8 @@ import java.security.AllPermission;
 import java.security.CodeSource;
 import java.security.KeyStore;
 import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.Permissions;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.security.SecurityPermission;
@@ -64,7 +66,7 @@ import net.sourceforge.prograde.type.Priority;
 
 /**
  * Policy file class which works with grant and deny policy rules in policy file.
- * 
+ *
  * @author Ondrej Lukas
  */
 public class ProGradePolicy extends Policy {
@@ -72,6 +74,7 @@ public class ProGradePolicy extends Policy {
     private Priority priority; // true for grant, false for deny
     private List<ProGradePolicyEntry> allGrantEntries;
     private List<ProGradePolicyEntry> allDenyEntries;
+    private List<GetPermissionsOverride> getPermissionsOverrides;
     private final boolean debug;
     private final boolean expandProperties;
     private final File file;
@@ -104,6 +107,8 @@ public class ProGradePolicy extends Policy {
         debug = debugPolicy;
         expandProperties = Boolean.parseBoolean(SecurityActions.getSecurityProperty("policy.expandProperties"));
         String policyFile = SecurityActions.getSystemProperty("java.security.policy");
+        //Property string of format ClassName:methodName,ClassName1:methodName1
+        getPermissionsOverrides = buildGetPermissionsOverrides(SecurityActions.getSystemProperty("proGrade.getPermissions.override"));
         if (policyFile != null) {
             skipDefaultPolicies = policyFile.startsWith("=");
             if (skipDefaultPolicies) {
@@ -115,6 +120,27 @@ public class ProGradePolicy extends Policy {
             file = null;
         }
         refresh();
+    }
+
+    /**
+     * Builds list of overrides for the getPermissions call.
+     *
+     * @param property Property string of format ClassName:methodName,ClassName1:methodName1
+     * @return list of GetPermissionOverrides
+     */
+    private List<GetPermissionsOverride> buildGetPermissionsOverrides(String property) {
+        if (property == null || property.length() == 0) {
+            return new ArrayList<GetPermissionsOverride>();
+        }
+        List<GetPermissionsOverride> overrides = new ArrayList<GetPermissionsOverride>();
+        String[] parts = property.split(",");
+        for (String part : parts) {
+            String[] pieces = part.split(":");
+            if (pieces.length == 2) {
+                overrides.add(new GetPermissionsOverride(pieces[0], pieces[1]));
+            }
+        }
+        return overrides;
     }
 
     /**
@@ -213,7 +239,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method which adds parsedEntries to entries.
-     * 
+     *
      * @param parsedEntries parsed entries from policy file which will be added to entries
      * @param entries entries will add parsed entries to themselves
      * @param keystore KeyStore which is used by this policy file
@@ -233,7 +259,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for initializing one policy entry.
-     * 
+     *
      * @param parsedEntry parsed entry using for creating new entry ProgradePolicyEntry
      * @param keystore KeyStore which is used by this policy file
      * @param grant true for priority grant, false for priority deny
@@ -288,7 +314,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Method for determining whether this ProgradePolicyEntry implies given permission.
-     * 
+     *
      * @param protectionDomain active ProtectionDomain to test
      * @param permission Permission which need to be determined
      * @return true if ProgradePolicyFile implies given Permission, false otherwise
@@ -357,7 +383,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for determining whether grant entries of ProgradePolicyFile imply given Permission.
-     * 
+     *
      * @param domain active ProtectionDomain to test
      * @param permission Permission which need to be determined
      * @return true if grant entries of this ProgradePolicyFile grant given Permission, false otherwise
@@ -368,7 +394,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for determining whether deny entries of ProgradePolicyFile imply given Permission which means denying it.
-     * 
+     *
      * @param domain active ProtectionDomain to test
      * @param permission Permission which need to be determined
      * @return true if deny entries of this ProgradePolicyFile deny given Permission, false otherwise
@@ -379,10 +405,10 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for determining whether grant or deny entries of ProgradePolicyFile imply given Permission.
-     * 
+     *
      * @param domain active ProtectionDomain to test
      * @param permission Permission which need to be determined
-     * 
+     *
      * @return true if grant or deny entries of this ProgradePolicyFile imply given Permission, false otherwise
      */
     private boolean entriesImplyPermission(List<ProGradePolicyEntry> policyEntriesList, ProtectionDomain domain,
@@ -397,7 +423,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for creating new Permission object from ParsedPermission.
-     * 
+     *
      * @param p ParsedPermission with informations about Permission.
      * @param keystore KeyStore which is used by this policy file
      * @return new created Permission or null if Permission doesn't exist or doesn't be created.
@@ -506,7 +532,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for expanding String which contains any property.
-     * 
+     *
      * @param s String for expanding
      * @return expanded String
      * @throws Exception when any ends without '}' or contains inner property expansion
@@ -549,7 +575,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for creating new CodeSource object from ParsedEntry.
-     * 
+     *
      * @param parsedEntry ParsedEntry with informations about CodeSource
      * @param keystore KeyStore which is used by this policy file
      * @return new created CodeSource
@@ -597,7 +623,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for adapting URL for using of this ProgradePolicyFile.
-     * 
+     *
      * @param url URL for adapting
      * @return adapted URL
      * @throws Exception when there was any problem during adapting URL
@@ -611,7 +637,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for creating KeyStore object from ParsedKeystoreEntry and other information from policy file.
-     * 
+     *
      * @param parsedKeystoreEntry parsedKeystoreEntry containing information about keystore
      * @param keystorePasswordURL URL to file which contain password for given keystore
      * @param policyFile used policy file
@@ -676,7 +702,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for reading password for keystore from file.
-     * 
+     *
      * @param keystorePasswordURL URL to file which contain password for keystore
      * @param policyFile used policy file
      * @return password for keystore
@@ -705,7 +731,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for gaining X500Principal from keystore according its alias.
-     * 
+     *
      * @param alias alias of principal
      * @param keystore KeyStore which is used by this policy file
      * @return name of gained X500Principal
@@ -731,7 +757,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for gaining absolute path of folder with policy file .
-     * 
+     *
      * @param file file with policy
      * @return absolute path for folder with policy file or null if file doesn't exist
      */
@@ -744,7 +770,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for gaining and parsing all policies defined in java.security file.
-     * 
+     *
      * @return Parsed policies in list of ParsedPolicy
      */
     private List<ParsedPolicy> getJavaPolicies() {
@@ -791,7 +817,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for initializing static policy.
-     * 
+     *
      * @throws Exception when there was any problem during initializing static policy
      */
     private void initializeStaticPolicy(List<ProGradePolicyEntry> grantEntriesList) throws Exception {
@@ -859,7 +885,7 @@ public class ProGradePolicy extends Policy {
     /**
      * Gets {@link URI#toASCIIString()} as an input and the escaped octets %XX are converted to lower case (because of the
      * Oracle PolicyFile implementation of CodeSource comparing).
-     * 
+     *
      * @param encodedUri
      * @return given URI String with lower-cased codes of non-ascii characters
      */
@@ -883,7 +909,7 @@ public class ProGradePolicy extends Policy {
 
     /**
      * Private method for getting certificates from KeyStore.
-     * 
+     *
      * @param parsedCertificates signedBy part of policy file defines certificates
      * @param keystore KeyStore which is used by this policy file
      * @return array of Certificates
@@ -915,5 +941,45 @@ public class ProGradePolicy extends Policy {
             certList.toArray(certificates);
         }
         return certificates;
+    }
+
+    @Override
+    public PermissionCollection getPermissions(CodeSource codesource) {
+        // code should not rely on this method, or at least use it correctly:
+        // https://bugs.openjdk.java.net/browse/JDK-8014008
+        // return them a new empty permissions object so jvisualvm etc work
+        // Workaround credit goes to Robert Muir (github.com/rmuir)
+        // Jasper issue https://bz.apache.org/bugzilla/show_bug.cgi?id=41509 - won't fix
+        for (StackTraceElement element : Thread.currentThread()
+                .getStackTrace()) {
+            for (GetPermissionsOverride override : getPermissionsOverrides) {
+                if (override.getClassName()
+                        .equals(element.getClassName()) && override.getMethodName()
+                        .equals(element.getMethodName())) {
+                    return new Permissions();
+                }
+            }
+        }
+        // return UNSUPPORTED_EMPTY_COLLECTION since it is safe.
+        return super.getPermissions(codesource);
+    }
+
+    private static class GetPermissionsOverride {
+        private String className;
+
+        private String methodName;
+
+        GetPermissionsOverride(String className, String methodName) {
+            this.className = className;
+            this.methodName = methodName;
+        }
+
+        String getClassName() {
+            return className;
+        }
+
+        String getMethodName() {
+            return methodName;
+        }
     }
 }
