@@ -1,17 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.sourceforge.pro-grade</groupId>
+	<groupId>org.codice.pro-grade</groupId>
 	<artifactId>pro-grade</artifactId>
 	<version>1.1.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>pro-grade</name>
 	<description>Maven project for Java Security Policy with denying rules</description>
-	<url>http://pro-grade.sourceforge.net/</url>
-	<inceptionYear>2013</inceptionYear>
+	<url>https://github.com/codice/pro-grade</url>
+	<inceptionYear>2017</inceptionYear>
 	<organization>
-		<name>Ondřej Lukáš, Josef Cacek</name>
+		<name>Codice</name>
 	</organization>
 
 	<licenses>
@@ -23,37 +23,14 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:https://github.com/pro-grade/pro-grade.git</connection>
-		<developerConnection>scm:git:git@github.com:pro-grade/pro-grade.git</developerConnection>
-		<url>http://github.com/pro-grade/pro-grade</url>
+		<connection>scm:git:https://github.com/codice/pro-grade.git</connection>
+		<developerConnection>scm:git:git@github.com:codice/pro-grade.git</developerConnection>
+		<url>http://github.com/codice/pro-grade</url>
 	</scm>
-
-	<developers>
-		<developer>
-			<id>olukas</id>
-			<name>Ondrej Lukas</name>
-			<email>xondrejlukas@gmail.com</email>
-		</developer>
-		<developer>
-			<id>kwart</id>
-			<name>Josef Cacek</name>
-			<email>josef.cacek@gmail.com</email>
-		</developer>
-	</developers>
-
-	<mailingLists>
-		<mailingList>
-			<name>User List</name>
-			<subscribe>pro-grade+subscribe@googlegroups.com</subscribe>
-			<unsubscribe>pro-grade+unsubscribe@googlegroups.com</unsubscribe>
-			<post>pro-grade@googlegroups.com</post>
-			<archive>http://groups.google.com/forum/#!forum/pro-grade</archive>
-		</mailingList>
-	</mailingLists>
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>http://github.com/pro-grade/pro-grade/issues</url>
+		<url>http://github.com/codice/pro-grade/issues</url>
 	</issueManagement>
 
 	<properties>
@@ -104,16 +81,16 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.3</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.2.2</version>
+				<version>2.5.1</version>
 				<configuration>
 					<arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
 				</configuration>
