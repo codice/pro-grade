@@ -22,11 +22,12 @@
 		</license>
 	</licenses>
 
-	<scm>
-		<connection>scm:git:https://github.com/codice/pro-grade.git</connection>
-		<developerConnection>scm:git:git@github.com:codice/pro-grade.git</developerConnection>
-		<url>http://github.com/codice/pro-grade</url>
-	</scm>
+    <scm>
+        <url>https://github.com/codice/pro-grade</url>
+        <connection>scm:git:https://github.com/codice/pro-grade.git</connection>
+        <developerConnection>scm:git:https://github.com/codice/pro-grade.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
 	<issueManagement>
 		<system>GitHub</system>
