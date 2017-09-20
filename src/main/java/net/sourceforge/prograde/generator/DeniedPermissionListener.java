@@ -32,8 +32,8 @@ public interface DeniedPermissionListener {
     /**
      * Called when policy doesn't imply permission.
      * 
-     * @param pd
-     * @param perm
+     * @param pd ProtectionDomain
+     * @param perm Permission
      */
     void permissionDenied(ProtectionDomain pd, Permission perm);
 

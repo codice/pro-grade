@@ -79,8 +79,8 @@ public final class NotifyAndAllowPolicy extends Policy {
      * {@link DeniedPermissionListener#permissionDenied(ProtectionDomain, Permission)} is called.
      * </p>
      * 
-     * @param protectionDomain
-     * @param permission
+     * @param protectionDomain ProtectionDomain
+     * @param permission Permission
      * @return mostly true, but read the JavaDoc :)
      */
     @Override

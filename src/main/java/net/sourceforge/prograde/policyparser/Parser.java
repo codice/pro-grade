@@ -65,10 +65,10 @@ public class Parser {
 
     /**
      * Parse content of text policy file to ParsedPolicy object which represent this policy.
-     * 
+     *
      * @param file text file with policy file
      * @return parsed policy file which is represented by ParsedPolicy
-     * @throws throw Exception when any problem occurred during parsing file (file doesn't exist, incompatible policy file etc.)
+     * @throws Exception when any problem occurred during parsing file (file doesn't exist, incompatible policy file etc.)
      */
     public ParsedPolicy parse(File file) throws Exception {
         if (file == null || !file.exists()) {
@@ -101,7 +101,7 @@ public class Parser {
      * 
      * @param reader reader which provides policy content
      * @return parsed policy file which is represented by ParsedPolicy
-     * @throws throw Exception when any problem occurred during parsing file (file doesn't exist, incompatible policy file etc.)
+     * @throws Exception when any problem occurred during parsing file (file doesn't exist, incompatible policy file etc.)
      */
     public ParsedPolicy parse(Reader reader) throws Exception {
         BufferedReader br = new BufferedReader(reader);
@@ -199,7 +199,7 @@ public class Parser {
      * Private method for parsing policy (grant or deny) entry.
      * 
      * @param grantOrDeny true for grant entry, false for deny entry
-     * @throws throws Exception when any problem occurred during parsing policy entry
+     * @throws Exception when any problem occurred during parsing policy entry
      */
     private void parseGrantOrDenyEntry(boolean grantOrDeny) throws Exception {
         ParsedPolicyEntry policyEntry = new ParsedPolicyEntry();
@@ -276,7 +276,7 @@ public class Parser {
      * Private method for parsing principal part of policy entry.
      * 
      * @return parsed principal part of policy entry
-     * @throws throws Exception when any problem occurred during parsing principal
+     * @throws Exception when any problem occurred during parsing principal
      */
     private ParsedPrincipal parsePrincipal() throws Exception {
         lookahead = st.nextToken();
@@ -310,7 +310,7 @@ public class Parser {
      * Private method for parsing permission part of policy entry.
      * 
      * @return parsed permission part of policy entry
-     * @throws throws Exception when any problem occurred during parsing permission
+     * @throws Exception when any problem occurred during parsing permission
      */
     private ParsedPermission parsePermission() throws Exception {
         ParsedPermission permission = new ParsedPermission();
@@ -384,7 +384,7 @@ public class Parser {
     /**
      * Private method for parsing keystore entry.
      * 
-     * @throws throws Exception when any problem occurred during parsing keystore entry
+     * @throws Exception when any problem occurred during parsing keystore entry
      */
     private void parseKeystore() throws Exception {
         String tempKeystoreURL = null;
@@ -429,7 +429,7 @@ public class Parser {
     /**
      * Private method for parsing keystorePasswordURL entry.
      * 
-     * @throws throws Exception when any problem occurred during parsing keystorePasswordURL entry
+     * @throws Exception when any problem occurred during parsing keystorePasswordURL entry
      */
     private void parseKeystorePassword() throws Exception {
         lookahead = st.nextToken();
@@ -451,7 +451,7 @@ public class Parser {
     /**
      * Private method for parsing priority entry.
      * 
-     * @throws throws Exception when any problem occurred during parsing priority entry
+     * @throws Exception when any problem occurred during parsing priority entry
      */
     private void parsePriority() throws Exception {
         lookahead = st.nextToken();
