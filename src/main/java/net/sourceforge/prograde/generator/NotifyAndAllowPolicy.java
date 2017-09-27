@@ -20,11 +20,17 @@
 package net.sourceforge.prograde.generator;
 
 import java.security.AllPermission;
+import java.security.CodeSource;
 import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.Permissions;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.sourceforge.prograde.policy.ProGradePolicy;
+import static net.sourceforge.prograde.policy.SecurityActions.*;
 
 /**
  * Policy wrapper for debug purposes. It's main goal is to report denied permissions to a {@link DeniedPermissionListener}
@@ -44,6 +50,8 @@ public final class NotifyAndAllowPolicy extends Policy {
 
     private final Policy wrappedPolicy;
     private final DeniedPermissionListener listener;
+
+    private List<GetPermissionsOverride> getPermissionsOverrides;
 
     /**
      * Default constructor.
@@ -68,6 +76,23 @@ public final class NotifyAndAllowPolicy extends Policy {
             wrappedPolicy = SecurityActions.getPolicy();
         }
         listener = dpListener != null ? dpListener : new PrintDeniedPermissions();
+        //Property string of format ClassName:methodName,ClassName1:methodName1
+        getPermissionsOverrides = buildGetPermissionsOverrides(getSystemProperty("proGrade.getPermissions.override"));
+    }
+
+    private List<GetPermissionsOverride> buildGetPermissionsOverrides(String property) {
+        if (property == null || property.length() == 0) {
+            return new ArrayList<>();
+        }
+        List<GetPermissionsOverride> overrides = new ArrayList<>();
+        String[] parts = property.split(",");
+        for (String part : parts) {
+            String[] pieces = part.split(":");
+            if (pieces.length == 2) {
+                overrides.add(new GetPermissionsOverride(pieces[0], pieces[1]));
+            }
+        }
+        return overrides;
     }
 
     /**
@@ -111,6 +136,46 @@ public final class NotifyAndAllowPolicy extends Policy {
             listener.policyRefreshed();
         } catch (Throwable t) {
             t.printStackTrace();
+        }
+    }
+
+    @Override
+    public PermissionCollection getPermissions(CodeSource codesource) {
+        // code should not rely on this method, or at least use it correctly:
+        // https://bugs.openjdk.java.net/browse/JDK-8014008
+        // return them a new empty permissions object so jvisualvm etc work
+        // Workaround credit goes to Robert Muir (github.com/rmuir)
+        // Jasper issue https://bz.apache.org/bugzilla/show_bug.cgi?id=41509 - won't fix
+        for (StackTraceElement element : Thread.currentThread()
+                .getStackTrace()) {
+            for (GetPermissionsOverride override : getPermissionsOverrides) {
+                if (override.getClassName()
+                        .equals(element.getClassName()) && override.getMethodName()
+                        .equals(element.getMethodName())) {
+                    return new Permissions();
+                }
+            }
+        }
+        // return UNSUPPORTED_EMPTY_COLLECTION since it is safe.
+        return super.getPermissions(codesource);
+    }
+
+    private static class GetPermissionsOverride {
+        private String className;
+
+        private String methodName;
+
+        GetPermissionsOverride(String className, String methodName) {
+            this.className = className;
+            this.methodName = methodName;
+        }
+
+        String getClassName() {
+            return className;
+        }
+
+        String getMethodName() {
+            return methodName;
         }
     }
 }
