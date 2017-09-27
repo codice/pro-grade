@@ -28,7 +28,7 @@ import java.security.Security;
  * 
  * @author Josef Cacek
  */
-class SecurityActions {
+public class SecurityActions {
 
     /**
      * Returns a system property value using the specified <code>key</code>.
@@ -36,7 +36,7 @@ class SecurityActions {
      * @param key
      * @return
      */
-    static String getSystemProperty(final String key) {
+    public static String getSystemProperty(final String key) {
         final SecurityManager sm = System.getSecurityManager();
 
         if (sm != null) {
@@ -57,7 +57,7 @@ class SecurityActions {
      * @see Security#getProperty(String)
      * @return
      */
-    static String getSecurityProperty(final String key) {
+    public static String getSecurityProperty(final String key) {
         final SecurityManager sm = System.getSecurityManager();
 
         if (sm != null) {
