@@ -201,14 +201,12 @@
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<name>Sonatype Nexus snapshot repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<id>snapshots</id>
+			<url>${snapshots.repository.url}</url>
 		</snapshotRepository>
 		<repository>
-			<id>sonatype-nexus-staging</id>
-			<name>Sonatype Nexus release repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>releases</id>
+			<url>${releases.repository.url}</url>
 		</repository>
 		<site>
 			<id>pro-grade.sf.net</id>
